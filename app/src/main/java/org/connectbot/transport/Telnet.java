@@ -17,6 +17,17 @@
 
 package org.connectbot.transport;
 
+import android.annotation.SuppressLint;
+import android.content.Context;
+import android.net.Uri;
+import android.util.Log;
+
+import org.connectbot.R;
+import org.connectbot.bean.HostBean;
+import org.connectbot.service.TerminalBridge;
+import org.connectbot.service.TerminalManager;
+import org.connectbot.util.HostDatabase;
+
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
@@ -31,16 +42,6 @@ import java.util.Map;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-import org.connectbot.R;
-import org.connectbot.bean.HostBean;
-import org.connectbot.service.TerminalBridge;
-import org.connectbot.service.TerminalManager;
-import org.connectbot.util.HostDatabase;
-
-import android.annotation.SuppressLint;
-import android.content.Context;
-import android.net.Uri;
-import android.util.Log;
 import de.mud.telnet.TelnetProtocolHandler;
 
 /**
@@ -48,302 +49,312 @@ import de.mud.telnet.TelnetProtocolHandler;
  * Original idea from the JTA telnet package (de.mud.telnet)
  *
  * @author Kenny Root
- *
  */
 public class Telnet extends AbsTransport {
-	private static final String TAG = "CB.Telnet";
-	private static final String PROTOCOL = "telnet";
+    private static final String TAG = "CB.Telnet";
+    private static final String PROTOCOL = "telnet";
 
-	private static final int DEFAULT_PORT = 23;
+    private static final int DEFAULT_PORT = 23;
 
-	private TelnetProtocolHandler handler;
-	private Socket socket;
+    private TelnetProtocolHandler handler;
+    private Socket socket;
 
-	private InputStream is;
-	private OutputStream os;
-	private int width;
-	private int height;
+    private InputStream is;
+    private OutputStream os;
+    private int width;
+    private int height;
 
-	private boolean connected = false;
+    private boolean connected = false;
 
-	static final Pattern hostmask;
-	static {
-		hostmask = Pattern.compile("^([0-9a-z.-]+)(:(\\d+))?$", Pattern.CASE_INSENSITIVE);
-	}
+    static final Pattern hostmask;
 
-	public Telnet() {
-		handler = new TelnetProtocolHandler() {
-			/** get the current terminal type */
-			@Override
-			public String getTerminalType() {
-				return getEmulation();
-			}
+    static {
+        hostmask = Pattern.compile("^([0-9a-z.-]+)(:(\\d+))?$", Pattern.CASE_INSENSITIVE);
+    }
 
-			/** get the current window size */
-			@Override
-			public int[] getWindowSize() {
-				return new int[] { width, height };
-			}
+    public Telnet() {
+        handler = new TelnetProtocolHandler() {
+            /** get the current terminal type */
+            @Override
+            public String getTerminalType() {
+                return getEmulation();
+            }
 
-			/** notify about local echo */
-			@Override
-			public void setLocalEcho(boolean echo) {
-				/* EMPTY */
-			}
+            /** get the current window size */
+            @Override
+            public int[] getWindowSize() {
+                return new int[]{width, height};
+            }
 
-			/** write data to our back end */
-			@Override
-			public void write(byte[] b) throws IOException {
-				if (os != null)
-					os.write(b);
-			}
+            /** notify about local echo */
+            @Override
+            public void setLocalEcho(boolean echo) {
+                /* EMPTY */
+            }
 
-			/** sent on IAC EOR (prompt terminator for remote access systems). */
-			@Override
-			public void notifyEndOfRecord() {
-			}
+            /** write data to our back end */
+            @Override
+            public void write(byte[] b) throws IOException {
+                if (os != null) {
+                    os.write(b);
+                }
+            }
 
-			@Override
-			protected String getCharsetName() {
-				Charset charset = bridge.getCharset();
-				if (charset != null)
-					return charset.name();
-				else
-					return "";
-			}
-		};
-	}
+            /** sent on IAC EOR (prompt terminator for remote access systems). */
+            @Override
+            public void notifyEndOfRecord() {
+            }
 
-	/**
-	 * @param host
-	 * @param bridge
-	 * @param manager
-	 */
-	public Telnet(HostBean host, TerminalBridge bridge, TerminalManager manager) {
-		super(host, bridge, manager);
-	}
+            @Override
+            protected String getCharsetName() {
+                Charset charset = bridge.getCharset();
+                if (charset != null) {
+                    return charset.name();
+                } else {
+                    return "";
+                }
+            }
+        };
+    }
 
-	public static String getProtocolName() {
-		return PROTOCOL;
-	}
+    /**
+     * @param host
+     * @param bridge
+     * @param manager
+     */
+    public Telnet(HostBean host, TerminalBridge bridge, TerminalManager manager) {
+        super(host, bridge, manager);
+    }
 
-	private static void tryAllAddresses(Socket sock, String host, int port) throws IOException {
-		InetAddress[] addresses = InetAddress.getAllByName(host);
-		for (InetAddress addr : addresses) {
-			try {
-				sock.connect(new InetSocketAddress(addr, port));
-				return;
-			} catch (SocketTimeoutException e) {
-			}
-		}
-		throw new SocketTimeoutException("Could not connect; socket timed out");
-	}
+    public static String getProtocolName() {
+        return PROTOCOL;
+    }
 
-	@Override
-	public void connect() {
-		try {
-			socket = new Socket();
+    private static void tryAllAddresses(Socket sock, String host, int port) throws IOException {
+        InetAddress[] addresses = InetAddress.getAllByName(host);
+        for (InetAddress addr : addresses) {
+            try {
+                sock.connect(new InetSocketAddress(addr, port));
+                return;
+            } catch (SocketTimeoutException e) {
+            }
+        }
+        throw new SocketTimeoutException("Could not connect; socket timed out");
+    }
 
-			tryAllAddresses(socket, host.getHostname(), host.getPort());
+    @Override
+    public void connect() {
+        try {
+            socket = new Socket();
 
-			connected = true;
+            tryAllAddresses(socket, host.getHostname(), host.getPort());
 
-			is = socket.getInputStream();
-			os = socket.getOutputStream();
+            connected = true;
 
-			bridge.onConnected();
-		} catch (UnknownHostException e) {
-			Log.d(TAG, "IO Exception connecting to host", e);
-		} catch (IOException e) {
-			Log.d(TAG, "IO Exception connecting to host", e);
-		}
-	}
+            is = socket.getInputStream();
+            os = socket.getOutputStream();
 
-	@Override
-	public void close() {
-		connected = false;
-		if (socket != null)
-			try {
-				socket.close();
-				socket = null;
-			} catch (IOException e) {
-				Log.d(TAG, "Error closing telnet socket.", e);
-			}
-	}
+            bridge.onConnected();
+        } catch (UnknownHostException e) {
+            Log.d(TAG, "IO Exception connecting to host", e);
+        } catch (IOException e) {
+            Log.d(TAG, "IO Exception connecting to host", e);
+        }
+    }
 
-	@Override
-	public void flush() throws IOException {
-		os.flush();
-	}
+    @Override
+    public void close() {
+        connected = false;
+        if (socket != null) {
+            try {
+                socket.close();
+                socket = null;
+            } catch (IOException e) {
+                Log.d(TAG, "Error closing telnet socket.", e);
+            }
+        }
+    }
 
-	@Override
-	public int getDefaultPort() {
-		return DEFAULT_PORT;
-	}
+    @Override
+    public void flush() throws IOException {
+        os.flush();
+    }
 
-	@Override
-	public boolean isConnected() {
-		return connected;
-	}
+    @Override
+    public int getDefaultPort() {
+        return DEFAULT_PORT;
+    }
 
-	@Override
-	public boolean isSessionOpen() {
-		return connected;
-	}
+    @Override
+    public boolean isConnected() {
+        return connected;
+    }
 
-	@Override
-	public int read(byte[] buffer, int start, int len) throws IOException {
-		/* process all already read bytes */
-		int n = 0;
+    @Override
+    public boolean isSessionOpen() {
+        return connected;
+    }
 
-		do {
-			n = handler.negotiate(buffer, start);
-			if (n > 0)
-				return n;
-		} while (n == 0);
+    @Override
+    public int read(byte[] buffer, int start, int len) throws IOException {
+        /* process all already read bytes */
+        int n = 0;
 
-		while (n <= 0) {
-			do {
-				n = handler.negotiate(buffer, start);
-				if (n > 0)
-					return n;
-			} while (n == 0);
-			n = is.read(buffer, start, len);
-			if (n < 0) {
-				bridge.dispatchDisconnect(false);
-				throw new IOException("Remote end closed connection.");
-			}
+        do {
+            n = handler.negotiate(buffer, start);
+            if (n > 0) {
+                return n;
+            }
+        } while (n == 0);
 
-			handler.inputfeed(buffer, start, n);
-			n = handler.negotiate(buffer, start);
-		}
-		return n;
-	}
+        while (n <= 0) {
+            do {
+                n = handler.negotiate(buffer, start);
+                if (n > 0) {
+                    return n;
+                }
+            } while (n == 0);
+            n = is.read(buffer, start, len);
+            if (n < 0) {
+                bridge.dispatchDisconnect(false);
+                throw new IOException("Remote end closed connection.");
+            }
 
-	@Override
-	public void write(byte[] buffer) throws IOException {
-		try {
-			if (os != null)
-				os.write(buffer);
-		} catch (SocketException e) {
-			bridge.dispatchDisconnect(false);
-		}
-	}
+            handler.inputfeed(buffer, start, n);
+            n = handler.negotiate(buffer, start);
+        }
+        return n;
+    }
 
-	@Override
-	public void write(int c) throws IOException {
-		try {
-			if (os != null)
-				os.write(c);
-		} catch (SocketException e) {
-			bridge.dispatchDisconnect(false);
-		}
-	}
+    @Override
+    public void write(byte[] buffer) throws IOException {
+        try {
+            if (os != null) {
+                os.write(buffer);
+            }
+        } catch (SocketException e) {
+            bridge.dispatchDisconnect(false);
+        }
+    }
 
-	@Override
-	public void setDimensions(int columns, int rows, int width, int height) {
-		try {
-			handler.setWindowSize(columns, rows);
-		} catch (IOException e) {
-			Log.e(TAG, "Couldn't resize remote terminal", e);
-		}
-	}
+    @Override
+    public void write(int c) throws IOException {
+        try {
+            if (os != null) {
+                os.write(c);
+            }
+        } catch (SocketException e) {
+            bridge.dispatchDisconnect(false);
+        }
+    }
 
-	@SuppressLint("DefaultLocale")
-	@Override
-	public String getDefaultNickname(String username, String hostname, int port) {
-		if (port == DEFAULT_PORT) {
-			return String.format("%s", hostname);
-		} else {
-			return String.format("%s:%d", hostname, port);
-		}
-	}
+    @Override
+    public void setDimensions(int columns, int rows, int width, int height) {
+        try {
+            handler.setWindowSize(columns, rows);
+        } catch (IOException e) {
+            Log.e(TAG, "Couldn't resize remote terminal", e);
+        }
+    }
 
-	public static Uri getUri(String input) {
-		Matcher matcher = hostmask.matcher(input);
+    @SuppressLint("DefaultLocale")
+    @Override
+    public String getDefaultNickname(String username, String hostname, int port) {
+        if (port == DEFAULT_PORT) {
+            return String.format("%s", hostname);
+        } else {
+            return String.format("%s:%d", hostname, port);
+        }
+    }
 
-		if (!matcher.matches())
-			return null;
+    public static Uri getUri(String input) {
+        Matcher matcher = hostmask.matcher(input);
 
-		StringBuilder sb = new StringBuilder();
+        if (!matcher.matches()) {
+            return null;
+        }
 
-		sb.append(PROTOCOL)
-			.append("://")
-			.append(matcher.group(1));
+        StringBuilder sb = new StringBuilder();
 
-		String portString = matcher.group(3);
-		int port = DEFAULT_PORT;
-		if (portString != null) {
-			try {
-				port = Integer.parseInt(portString);
-				if (port < 1 || port > 65535) {
-					port = DEFAULT_PORT;
-				}
-			} catch (NumberFormatException nfe) {
-				// Keep the default port
-			}
-		}
+        sb.append(PROTOCOL)
+                .append("://")
+                .append(matcher.group(1));
 
-		if (port != DEFAULT_PORT) {
-			sb.append(':');
-			sb.append(port);
-		}
+        String portString = matcher.group(3);
+        int port = DEFAULT_PORT;
+        if (portString != null) {
+            try {
+                port = Integer.parseInt(portString);
+                if (port < 1 || port > 65535) {
+                    port = DEFAULT_PORT;
+                }
+            } catch (NumberFormatException nfe) {
+                // Keep the default port
+            }
+        }
 
-		sb.append("/#")
-			.append(Uri.encode(input));
+        if (port != DEFAULT_PORT) {
+            sb.append(':');
+            sb.append(port);
+        }
 
-		Uri uri = Uri.parse(sb.toString());
+        sb.append("/#")
+                .append(Uri.encode(input));
 
-		return uri;
-	}
+        Uri uri = Uri.parse(sb.toString());
 
-	@Override
-	public HostBean createHost(Uri uri) {
-		HostBean host = new HostBean();
+        return uri;
+    }
 
-		host.setProtocol(PROTOCOL);
+    @Override
+    public HostBean createHost(Uri uri) {
+        HostBean host = new HostBean();
 
-		host.setHostname(uri.getHost());
+        host.setProtocol(PROTOCOL);
 
-		int port = uri.getPort();
-		if (port < 0 || port > 65535)
-			port = DEFAULT_PORT;
-		host.setPort(port);
+        host.setHostname(uri.getHost());
 
-		String nickname = uri.getFragment();
-		if (nickname == null || nickname.length() == 0) {
-			host.setNickname(getDefaultNickname(host.getUsername(),
-					host.getHostname(), host.getPort()));
-		} else {
-			host.setNickname(uri.getFragment());
-		}
+        int port = uri.getPort();
+        if (port < 0 || port > 65535) {
+            port = DEFAULT_PORT;
+        }
+        host.setPort(port);
 
-		return host;
-	}
+        String nickname = uri.getFragment();
+        if (nickname == null || nickname.length() == 0) {
+            host.setNickname(getDefaultNickname(host.getUsername(),
+                    host.getHostname(), host.getPort()));
+        } else {
+            host.setNickname(uri.getFragment());
+        }
 
-	@Override
-	public void getSelectionArgs(Uri uri, Map<String, String> selection) {
-		selection.put(HostDatabase.FIELD_HOST_PROTOCOL, PROTOCOL);
-		selection.put(HostDatabase.FIELD_HOST_NICKNAME, uri.getFragment());
-		selection.put(HostDatabase.FIELD_HOST_HOSTNAME, uri.getHost());
+        return host;
+    }
 
-		int port = uri.getPort();
-		if (port < 0 || port > 65535)
-			port = DEFAULT_PORT;
-		selection.put(HostDatabase.FIELD_HOST_PORT, Integer.toString(port));
-	}
+    @Override
+    public void getSelectionArgs(Uri uri, Map<String, String> selection) {
+        selection.put(HostDatabase.FIELD_HOST_PROTOCOL, PROTOCOL);
+        selection.put(HostDatabase.FIELD_HOST_NICKNAME, uri.getFragment());
+        selection.put(HostDatabase.FIELD_HOST_HOSTNAME, uri.getHost());
 
-	public static String getFormatHint(Context context) {
-		return String.format("%s:%s",
-				context.getString(R.string.format_hostname),
-				context.getString(R.string.format_port));
-	}
+        int port = uri.getPort();
+        if (port < 0 || port > 65535) {
+            port = DEFAULT_PORT;
+        }
+        selection.put(HostDatabase.FIELD_HOST_PORT, Integer.toString(port));
+    }
 
-	/* (non-Javadoc)
-	 * @see org.connectbot.transport.AbsTransport#usesNetwork()
-	 */
-	@Override
-	public boolean usesNetwork() {
-		return true;
-	}
+    public static String getFormatHint(Context context) {
+        return String.format("%s:%s",
+                context.getString(R.string.format_hostname),
+                context.getString(R.string.format_port));
+    }
+
+    /* (non-Javadoc)
+     * @see org.connectbot.transport.AbsTransport#usesNetwork()
+     */
+    @Override
+    public boolean usesNetwork() {
+        return true;
+    }
 }

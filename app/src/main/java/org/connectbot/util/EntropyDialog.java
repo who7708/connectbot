@@ -17,35 +17,35 @@
 
 package org.connectbot.util;
 
-import org.connectbot.R;
-
 import android.app.Dialog;
 import android.content.Context;
 import android.view.View;
 
+import org.connectbot.R;
+
 public class EntropyDialog extends Dialog implements OnEntropyGatheredListener {
 
-	public EntropyDialog(Context context) {
-		super(context);
+    public EntropyDialog(Context context) {
+        super(context);
 
-		this.setContentView(R.layout.dia_gatherentropy);
-		this.setTitle(R.string.pubkey_gather_entropy);
+        this.setContentView(R.layout.dia_gatherentropy);
+        this.setTitle(R.string.pubkey_gather_entropy);
 
-		((EntropyView) findViewById(R.id.entropy)).addOnEntropyGatheredListener(this);
-	}
+        ((EntropyView) findViewById(R.id.entropy)).addOnEntropyGatheredListener(this);
+    }
 
-	public EntropyDialog(Context context, View view) {
-		super(context);
+    public EntropyDialog(Context context, View view) {
+        super(context);
 
-		this.setContentView(view);
-		this.setTitle(R.string.pubkey_gather_entropy);
+        this.setContentView(view);
+        this.setTitle(R.string.pubkey_gather_entropy);
 
-		((EntropyView) findViewById(R.id.entropy)).addOnEntropyGatheredListener(this);
-	}
+        ((EntropyView) findViewById(R.id.entropy)).addOnEntropyGatheredListener(this);
+    }
 
-	@Override
-	public void onEntropyGathered(byte[] entropy) {
-		this.dismiss();
-	}
+    @Override
+    public void onEntropyGathered(byte[] entropy) {
+        this.dismiss();
+    }
 
 }

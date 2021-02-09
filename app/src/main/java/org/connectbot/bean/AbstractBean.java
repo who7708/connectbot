@@ -17,33 +17,34 @@
 
 package org.connectbot.bean;
 
-import java.util.Map.Entry;
+import android.content.ContentValues;
 
 import org.connectbot.util.XmlBuilder;
 
-import android.content.ContentValues;
+import java.util.Map.Entry;
 
 /**
  * @author Kenny Root
- *
  */
 abstract class AbstractBean {
-	public abstract ContentValues getValues();
-	public abstract String getBeanName();
+    public abstract ContentValues getValues();
 
-	public String toXML() {
-		XmlBuilder xml = new XmlBuilder();
+    public abstract String getBeanName();
 
-		xml.append(String.format("<%s>", getBeanName()));
+    public String toXML() {
+        XmlBuilder xml = new XmlBuilder();
 
-		ContentValues values = getValues();
-		for (Entry<String, Object> entry : values.valueSet()) {
-			Object value = entry.getValue();
-			if (value != null)
-				xml.append(entry.getKey(), value);
-		}
-		xml.append(String.format("</%s>", getBeanName()));
+        xml.append(String.format("<%s>", getBeanName()));
 
-		return xml.toString();
-	}
+        ContentValues values = getValues();
+        for (Entry<String, Object> entry : values.valueSet()) {
+            Object value = entry.getValue();
+            if (value != null) {
+                xml.append(entry.getKey(), value);
+            }
+        }
+        xml.append(String.format("</%s>", getBeanName()));
+
+        return xml.toString();
+    }
 }

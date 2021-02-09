@@ -17,35 +17,34 @@
 
 package org.connectbot.util;
 
-import com.google.android.gms.security.ProviderInstaller;
-
 import android.content.Context;
 import android.content.Intent;
+
+import com.google.android.gms.security.ProviderInstaller;
 
 /**
  * Created by kenny on 3/2/17.
  */
-
 public final class ProviderLoader {
-	public static void load(Context context, ProviderLoaderListener listener) {
-		ProviderInstaller.installIfNeededAsync(context, new ProviderInstallListenerWrapper(listener));
-	}
+    public static void load(Context context, ProviderLoaderListener listener) {
+        ProviderInstaller.installIfNeededAsync(context, new ProviderInstallListenerWrapper(listener));
+    }
 
-	private static class ProviderInstallListenerWrapper implements ProviderInstaller.ProviderInstallListener {
-		private final ProviderLoaderListener mListener;
+    private static class ProviderInstallListenerWrapper implements ProviderInstaller.ProviderInstallListener {
+        private final ProviderLoaderListener mListener;
 
-		public ProviderInstallListenerWrapper(ProviderLoaderListener listener) {
-			mListener = listener;
-		}
+        public ProviderInstallListenerWrapper(ProviderLoaderListener listener) {
+            mListener = listener;
+        }
 
-		@Override
-		public void onProviderInstalled() {
-			mListener.onProviderLoaderSuccess();
-		}
+        @Override
+        public void onProviderInstalled() {
+            mListener.onProviderLoaderSuccess();
+        }
 
-		@Override
-		public void onProviderInstallFailed(int i, Intent intent) {
-			mListener.onProviderLoaderError();
-		}
-	}
+        @Override
+        public void onProviderInstallFailed(int i, Intent intent) {
+            mListener.onProviderLoaderError();
+        }
+    }
 }

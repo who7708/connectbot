@@ -17,61 +17,61 @@
 
 package org.connectbot.util;
 
-import org.connectbot.R;
-
 import android.content.Context;
 import android.content.res.TypedArray;
-import androidx.preference.DialogPreference;
 import android.util.AttributeSet;
+
+import androidx.preference.DialogPreference;
+
+import org.connectbot.R;
 
 /**
  * @author Kenny Root
- *
  */
 public class VolumePreference extends DialogPreference {
-	private int mVolume = (int) (PreferenceConstants.DEFAULT_BELL_VOLUME * 100);
+    private int mVolume = (int) (PreferenceConstants.DEFAULT_BELL_VOLUME * 100);
 
-	public VolumePreference(Context context) {
-		this(context, null);
-	}
+    public VolumePreference(Context context) {
+        this(context, null);
+    }
 
-	public VolumePreference(Context context, AttributeSet attrs) {
-		this(context, attrs, R.attr.dialogPreferenceStyle);
-	}
+    public VolumePreference(Context context, AttributeSet attrs) {
+        this(context, attrs, R.attr.dialogPreferenceStyle);
+    }
 
-	public VolumePreference(Context context, AttributeSet attrs, int defStyleAttr) {
-		this(context, attrs, defStyleAttr, defStyleAttr);
-	}
+    public VolumePreference(Context context, AttributeSet attrs, int defStyleAttr) {
+        this(context, attrs, defStyleAttr, defStyleAttr);
+    }
 
-	public VolumePreference(Context context, AttributeSet attrs, int defStyleAttr, int defStyleRes) {
-		super(context, attrs, defStyleAttr, defStyleRes);
+    public VolumePreference(Context context, AttributeSet attrs, int defStyleAttr, int defStyleRes) {
+        super(context, attrs, defStyleAttr, defStyleRes);
 
-		setPersistent(true);
-	}
+        setPersistent(true);
+    }
 
-	@Override
-	public int getDialogLayoutResource() {
-		return R.layout.volume_preference_dialog_layout;
-	}
+    @Override
+    public int getDialogLayoutResource() {
+        return R.layout.volume_preference_dialog_layout;
+    }
 
-	@Override
-	protected Object onGetDefaultValue(TypedArray a, int index) {
-		return a.getInt(index, 100);
-	}
+    @Override
+    protected Object onGetDefaultValue(TypedArray a, int index) {
+        return a.getInt(index, 100);
+    }
 
-	@Override
-	protected void onSetInitialValue(boolean restorePersistedValue, Object defaultValue) {
-		setVolume(restorePersistedValue ?
-				(int) (getPersistedFloat(mVolume) * 100) : (int) defaultValue);
-	}
+    @Override
+    protected void onSetInitialValue(boolean restorePersistedValue, Object defaultValue) {
+        setVolume(restorePersistedValue ?
+                (int) (getPersistedFloat(mVolume) * 100) : (int) defaultValue);
+    }
 
-	public int getVolume() {
-		return mVolume;
-	}
+    public int getVolume() {
+        return mVolume;
+    }
 
-	public void setVolume(int volume) {
-		mVolume = volume;
+    public void setVolume(int volume) {
+        mVolume = volume;
 
-		persistFloat(mVolume / 100f);
-	}
+        persistFloat(mVolume / 100f);
+    }
 }

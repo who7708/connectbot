@@ -17,10 +17,6 @@
 
 package org.connectbot.service;
 
-import org.connectbot.util.HostDatabase;
-import org.connectbot.util.PreferenceConstants;
-import org.connectbot.util.PubkeyDatabase;
-
 import android.app.backup.BackupAgentHelper;
 import android.app.backup.FileBackupHelper;
 import android.app.backup.SharedPreferencesBackupHelper;
@@ -28,27 +24,31 @@ import android.content.SharedPreferences;
 import android.preference.PreferenceManager;
 import android.util.Log;
 
+import org.connectbot.util.HostDatabase;
+import org.connectbot.util.PreferenceConstants;
+import org.connectbot.util.PubkeyDatabase;
+
 /**
  * ConnectBot's backup agent. This is only loaded on API 8 and later by
  * reading the AndroidManifest.xml, so it shouldn't affect any minimum
  * SDK level.
  */
 public class BackupAgent extends BackupAgentHelper {
-	@Override
-	public void onCreate() {
-		Log.d("ConnectBot.BackupAgent", "onCreate called");
+    @Override
+    public void onCreate() {
+        Log.d("ConnectBot.BackupAgent", "onCreate called");
 
-		SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(this);
+        SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(this);
 
-		SharedPreferencesBackupHelper prefsHelper = new SharedPreferencesBackupHelper(this, getPackageName() + "_preferences");
-		addHelper(PreferenceConstants.BACKUP_PREF_KEY, prefsHelper);
+        SharedPreferencesBackupHelper prefsHelper = new SharedPreferencesBackupHelper(this, getPackageName() + "_preferences");
+        addHelper(PreferenceConstants.BACKUP_PREF_KEY, prefsHelper);
 
-		FileBackupHelper hosts = new FileBackupHelper(this, "../databases/" + HostDatabase.DB_NAME);
-		addHelper(HostDatabase.DB_NAME, hosts);
+        FileBackupHelper hosts = new FileBackupHelper(this, "../databases/" + HostDatabase.DB_NAME);
+        addHelper(HostDatabase.DB_NAME, hosts);
 
-		if (prefs.getBoolean(PreferenceConstants.BACKUP_KEYS, PreferenceConstants.BACKUP_KEYS_DEFAULT)) {
-			FileBackupHelper pubkeys = new FileBackupHelper(this, "../databases/" + PubkeyDatabase.DB_NAME);
-			addHelper(PubkeyDatabase.DB_NAME, pubkeys);
-		}
-	}
+        if (prefs.getBoolean(PreferenceConstants.BACKUP_KEYS, PreferenceConstants.BACKUP_KEYS_DEFAULT)) {
+            FileBackupHelper pubkeys = new FileBackupHelper(this, "../databases/" + PubkeyDatabase.DB_NAME);
+            addHelper(PubkeyDatabase.DB_NAME, pubkeys);
+        }
+    }
 }

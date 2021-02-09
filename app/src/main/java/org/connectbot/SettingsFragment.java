@@ -17,44 +17,45 @@
 
 package org.connectbot;
 
-import org.connectbot.util.VolumePreference;
-import org.connectbot.util.VolumePreferenceFragment;
+import android.os.Bundle;
+
+import androidx.fragment.app.DialogFragment;
+import androidx.preference.Preference;
 
 import com.takisoft.preferencex.PreferenceFragmentCompat;
 
-import android.os.Bundle;
-import androidx.fragment.app.DialogFragment;
-import androidx.preference.Preference;
+import org.connectbot.util.VolumePreference;
+import org.connectbot.util.VolumePreferenceFragment;
 
 /**
  * Created by kenny on 2/20/17.
  */
 
 public class SettingsFragment extends PreferenceFragmentCompat {
-	public SettingsFragment() {
-	}
+    public SettingsFragment() {
+    }
 
-	/**
-	 * Called when a preference in the tree requests to display a dialog. Subclasses should
-	 * override this method to display custom dialogs or to handle dialogs for custom preference
-	 * classes.
-	 *
-	 * @param preference The Preference object requesting the dialog.
-	 */
-	@Override
-	public void onDisplayPreferenceDialog(Preference preference) {
-		if (preference instanceof VolumePreference) {
-			DialogFragment fragment = VolumePreferenceFragment.newInstance(preference);
-			fragment.setTargetFragment(this, 0);
-			fragment.show(getFragmentManager(),
-					"android.support.v7.preference.PreferenceFragment.DIALOG");
-		} else {
-			super.onDisplayPreferenceDialog(preference);
-		}
-	}
+    /**
+     * Called when a preference in the tree requests to display a dialog. Subclasses should
+     * override this method to display custom dialogs or to handle dialogs for custom preference
+     * classes.
+     *
+     * @param preference The Preference object requesting the dialog.
+     */
+    @Override
+    public void onDisplayPreferenceDialog(Preference preference) {
+        if (preference instanceof VolumePreference) {
+            DialogFragment fragment = VolumePreferenceFragment.newInstance(preference);
+            fragment.setTargetFragment(this, 0);
+            fragment.show(getFragmentManager(),
+                    "android.support.v7.preference.PreferenceFragment.DIALOG");
+        } else {
+            super.onDisplayPreferenceDialog(preference);
+        }
+    }
 
-	@Override
-	public void onCreatePreferencesFix(Bundle bundle, String rootKey) {
-		setPreferencesFromResource(R.xml.preferences, rootKey);
-	}
+    @Override
+    public void onCreatePreferencesFix(Bundle bundle, String rootKey) {
+        setPreferencesFromResource(R.xml.preferences, rootKey);
+    }
 }

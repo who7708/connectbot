@@ -17,16 +17,17 @@
 
 package org.connectbot;
 
+import android.content.Context;
+import android.content.Intent;
+
+import androidx.test.ext.junit.runners.AndroidJUnit4;
+import androidx.test.rule.ActivityTestRule;
+
 import org.connectbot.util.PubkeyDatabase;
 import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
-
-import android.content.Context;
-import android.content.Intent;
-import androidx.test.ext.junit.runners.AndroidJUnit4;
-import androidx.test.rule.ActivityTestRule;
 
 import static androidx.test.InstrumentationRegistry.getTargetContext;
 import static androidx.test.espresso.Espresso.onView;
@@ -40,21 +41,21 @@ import static androidx.test.espresso.matcher.ViewMatchers.withId;
  */
 @RunWith(AndroidJUnit4.class)
 public class EditHostActivityTest {
-	@Rule
-	public final ActivityTestRule<EditHostActivity> mActivityRule = new ActivityTestRule<>(
-			EditHostActivity.class, false, false);
+    @Rule
+    public final ActivityTestRule<EditHostActivity> mActivityRule = new ActivityTestRule<>(
+            EditHostActivity.class, false, false);
 
-	@Before
-	public void makeDatabasePristine() {
-		Context testContext = getTargetContext();
-		PubkeyDatabase.resetInMemoryInstance(testContext);
+    @Before
+    public void makeDatabasePristine() {
+        Context testContext = getTargetContext();
+        PubkeyDatabase.resetInMemoryInstance(testContext);
 
-		mActivityRule.launchActivity(new Intent());
-	}
+        mActivityRule.launchActivity(new Intent());
+    }
 
-	@Test
-	public void checkFontSizeEntry() throws Exception {
-		onView(withId(R.id.font_size_text)).perform(scrollTo(), clearText());
-		onView(withId(R.id.nickname_field)).perform(click());
-	}
+    @Test
+    public void checkFontSizeEntry() throws Exception {
+        onView(withId(R.id.font_size_text)).perform(scrollTo(), clearText());
+        onView(withId(R.id.nickname_field)).perform(click());
+    }
 }

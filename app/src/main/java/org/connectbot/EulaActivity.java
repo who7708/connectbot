@@ -17,18 +17,19 @@
 
 package org.connectbot;
 
-import org.connectbot.util.Version;
-
 import android.os.Bundle;
+
 import androidx.appcompat.app.AppCompatActivity;
+
+import org.connectbot.util.Version;
 
 public class EulaActivity extends AppCompatActivity {
 
-	@Override
-	protected void onCreate(Bundle savedInstanceState) {
-		super.onCreate(savedInstanceState);
-		setContentView(R.layout.act_eula);
+    @Override
+    protected void onCreate(Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        setContentView(R.layout.act_eula);
 
-		Version.setVersionText(getApplicationContext(), findViewById(R.id.version));
-	}
+        Version.setVersionText(getApplicationContext(), findViewById(R.id.version));
+    }
 }

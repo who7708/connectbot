@@ -17,21 +17,22 @@
 
 package org.connectbot;
 
-import com.linkedin.android.testbutler.TestButler;
-
 import android.os.Bundle;
+
 import androidx.test.runner.AndroidJUnitRunner;
 
-public class ConnectbotJUnitRunner extends AndroidJUnitRunner {
-		@Override
-		public void onStart() {
-			TestButler.setup(getTargetContext());
-			super.onStart();
-		}
+import com.linkedin.android.testbutler.TestButler;
 
-		@Override
-		public void finish(int resultCode, Bundle results) {
-			TestButler.teardown(getTargetContext());
-			super.finish(resultCode, results);
-		}
+public class ConnectbotJUnitRunner extends AndroidJUnitRunner {
+    @Override
+    public void onStart() {
+        TestButler.setup(getTargetContext());
+        super.onStart();
+    }
+
+    @Override
+    public void finish(int resultCode, Bundle results) {
+        TestButler.teardown(getTargetContext());
+        super.finish(resultCode, results);
+    }
 }

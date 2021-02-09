@@ -17,12 +17,6 @@
 
 package org.connectbot.service;
 
-import org.connectbot.ConsoleActivity;
-import org.connectbot.HostListActivity;
-import org.connectbot.R;
-import org.connectbot.bean.HostBean;
-import org.connectbot.util.HostDatabase;
-
 import android.annotation.TargetApi;
 import android.app.Notification;
 import android.app.NotificationChannel;
@@ -34,7 +28,14 @@ import android.content.Intent;
 import android.content.res.Resources;
 import android.graphics.Color;
 import android.os.Build;
+
 import androidx.core.app.NotificationCompat;
+
+import org.connectbot.ConsoleActivity;
+import org.connectbot.HostListActivity;
+import org.connectbot.R;
+import org.connectbot.bean.HostBean;
+import org.connectbot.util.HostDatabase;
 
 /**
  * @author Kenny Root
@@ -42,120 +43,121 @@ import androidx.core.app.NotificationCompat;
  * Based on the concept from jasta's blog post.
  */
 public class ConnectionNotifier {
-	private static final int ONLINE_NOTIFICATION = 1;
-	private static final int ACTIVITY_NOTIFICATION = 2;
-	private static final int ONLINE_DISCONNECT_NOTIFICATION = 3;
+    private static final int ONLINE_NOTIFICATION = 1;
+    private static final int ACTIVITY_NOTIFICATION = 2;
+    private static final int ONLINE_DISCONNECT_NOTIFICATION = 3;
 
-	private static final String NOTIFICATION_CHANNEL = "my_connectbot_channel";
+    private static final String NOTIFICATION_CHANNEL = "my_connectbot_channel";
 
-	private static class Holder {
-		private static final ConnectionNotifier sInstance = new ConnectionNotifier();
-	}
+    private static class Holder {
+        private static final ConnectionNotifier sInstance = new ConnectionNotifier();
+    }
 
-	private ConnectionNotifier() {
-	}
+    private ConnectionNotifier() {
+    }
 
-	public static ConnectionNotifier getInstance() {
-		return Holder.sInstance;
-	}
+    public static ConnectionNotifier getInstance() {
+        return Holder.sInstance;
+    }
 
-	private NotificationManager getNotificationManager(Context context) {
-		return (NotificationManager) context.getSystemService(Context.NOTIFICATION_SERVICE);
-	}
+    private NotificationManager getNotificationManager(Context context) {
+        return (NotificationManager) context.getSystemService(Context.NOTIFICATION_SERVICE);
+    }
 
-	private NotificationCompat.Builder newNotificationBuilder(Context context, String id) {
-		NotificationCompat.Builder builder =
-				new NotificationCompat.Builder(context, id)
-				.setSmallIcon(R.drawable.notification_icon)
-				.setWhen(System.currentTimeMillis());
+    private NotificationCompat.Builder newNotificationBuilder(Context context, String id) {
+        NotificationCompat.Builder builder =
+                new NotificationCompat.Builder(context, id)
+                        .setSmallIcon(R.drawable.notification_icon)
+                        .setWhen(System.currentTimeMillis());
 
-		if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
-			createNotificationChannel(context, id);
-		}
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+            createNotificationChannel(context, id);
+        }
 
-		return builder;
-	}
+        return builder;
+    }
 
-	@TargetApi(Build.VERSION_CODES.O)
-	private void createNotificationChannel(Context context, String id) {
-		NotificationChannel nc = new NotificationChannel(id, context.getString(R.string.app_name),
-				NotificationManager.IMPORTANCE_DEFAULT);
-		getNotificationManager(context).createNotificationChannel(nc);
-	}
+    @TargetApi(Build.VERSION_CODES.O)
+    private void createNotificationChannel(Context context, String id) {
+        NotificationChannel nc = new NotificationChannel(id, context.getString(R.string.app_name),
+                NotificationManager.IMPORTANCE_DEFAULT);
+        getNotificationManager(context).createNotificationChannel(nc);
+    }
 
-	private Notification newActivityNotification(Context context, HostBean host) {
-		NotificationCompat.Builder builder = newNotificationBuilder(context, NOTIFICATION_CHANNEL);
+    private Notification newActivityNotification(Context context, HostBean host) {
+        NotificationCompat.Builder builder = newNotificationBuilder(context, NOTIFICATION_CHANNEL);
 
-		Resources res = context.getResources();
+        Resources res = context.getResources();
 
-		String contentText = res.getString(
-				R.string.notification_text, host.getNickname());
+        String contentText = res.getString(
+                R.string.notification_text, host.getNickname());
 
-		Intent notificationIntent = new Intent(context, ConsoleActivity.class);
-		notificationIntent.setAction("android.intent.action.VIEW");
-		notificationIntent.setData(host.getUri());
+        Intent notificationIntent = new Intent(context, ConsoleActivity.class);
+        notificationIntent.setAction("android.intent.action.VIEW");
+        notificationIntent.setData(host.getUri());
 
-		PendingIntent contentIntent = PendingIntent.getActivity(context, 0,
-				notificationIntent, 0);
+        PendingIntent contentIntent = PendingIntent.getActivity(context, 0,
+                notificationIntent, 0);
 
-		builder.setContentTitle(res.getString(R.string.app_name))
-				.setContentText(contentText)
-				.setContentIntent(contentIntent);
+        builder.setContentTitle(res.getString(R.string.app_name))
+                .setContentText(contentText)
+                .setContentIntent(contentIntent);
 
-		builder.setAutoCancel(true);
+        builder.setAutoCancel(true);
 
-		int ledOnMS = 300;
-		int ledOffMS = 1000;
-		builder.setDefaults(Notification.DEFAULT_LIGHTS);
-		if (HostDatabase.COLOR_RED.equals(host.getColor()))
-			builder.setLights(Color.RED, ledOnMS, ledOffMS);
-		else if (HostDatabase.COLOR_GREEN.equals(host.getColor()))
-			builder.setLights(Color.GREEN, ledOnMS, ledOffMS);
-		else if (HostDatabase.COLOR_BLUE.equals(host.getColor()))
-			builder.setLights(Color.BLUE, ledOnMS, ledOffMS);
-		else
-			builder.setLights(Color.WHITE, ledOnMS, ledOffMS);
+        int ledOnMS = 300;
+        int ledOffMS = 1000;
+        builder.setDefaults(Notification.DEFAULT_LIGHTS);
+        if (HostDatabase.COLOR_RED.equals(host.getColor())) {
+            builder.setLights(Color.RED, ledOnMS, ledOffMS);
+        } else if (HostDatabase.COLOR_GREEN.equals(host.getColor())) {
+            builder.setLights(Color.GREEN, ledOnMS, ledOffMS);
+        } else if (HostDatabase.COLOR_BLUE.equals(host.getColor())) {
+            builder.setLights(Color.BLUE, ledOnMS, ledOffMS);
+        } else {
+            builder.setLights(Color.WHITE, ledOnMS, ledOffMS);
+        }
 
-		return builder.build();
-	}
+        return builder.build();
+    }
 
-	private Notification newRunningNotification(Context context) {
-		NotificationCompat.Builder builder = newNotificationBuilder(context, NOTIFICATION_CHANNEL);
+    private Notification newRunningNotification(Context context) {
+        NotificationCompat.Builder builder = newNotificationBuilder(context, NOTIFICATION_CHANNEL);
 
-		builder.setOngoing(true);
-		builder.setWhen(0);
+        builder.setOngoing(true);
+        builder.setWhen(0);
 
-		builder.setContentIntent(PendingIntent.getActivity(context,
-				ONLINE_NOTIFICATION,
-				new Intent(context, ConsoleActivity.class), 0));
+        builder.setContentIntent(PendingIntent.getActivity(context,
+                ONLINE_NOTIFICATION,
+                new Intent(context, ConsoleActivity.class), 0));
 
-		Resources res = context.getResources();
-		builder.setContentTitle(res.getString(R.string.app_name));
-		builder.setContentText(res.getString(R.string.app_is_running));
+        Resources res = context.getResources();
+        builder.setContentTitle(res.getString(R.string.app_name));
+        builder.setContentText(res.getString(R.string.app_is_running));
 
-		Intent disconnectIntent = new Intent(context, HostListActivity.class);
-		disconnectIntent.setAction(HostListActivity.DISCONNECT_ACTION);
-		builder.addAction(
-				android.R.drawable.ic_menu_close_clear_cancel,
-				res.getString(R.string.list_host_disconnect),
-				PendingIntent.getActivity(
-						context,
-						ONLINE_DISCONNECT_NOTIFICATION,
-						disconnectIntent,
-						0));
+        Intent disconnectIntent = new Intent(context, HostListActivity.class);
+        disconnectIntent.setAction(HostListActivity.DISCONNECT_ACTION);
+        builder.addAction(
+                android.R.drawable.ic_menu_close_clear_cancel,
+                res.getString(R.string.list_host_disconnect),
+                PendingIntent.getActivity(
+                        context,
+                        ONLINE_DISCONNECT_NOTIFICATION,
+                        disconnectIntent,
+                        0));
 
-		return builder.build();
-	}
+        return builder.build();
+    }
 
-	void showActivityNotification(Service context, HostBean host) {
-		getNotificationManager(context).notify(ACTIVITY_NOTIFICATION, newActivityNotification(context, host));
-	}
+    void showActivityNotification(Service context, HostBean host) {
+        getNotificationManager(context).notify(ACTIVITY_NOTIFICATION, newActivityNotification(context, host));
+    }
 
-	void showRunningNotification(Service context) {
-		context.startForeground(ONLINE_NOTIFICATION, newRunningNotification(context));
-	}
+    void showRunningNotification(Service context) {
+        context.startForeground(ONLINE_NOTIFICATION, newRunningNotification(context));
+    }
 
-	void hideRunningNotification(Service context) {
-		context.stopForeground(true);
-	}
+    void hideRunningNotification(Service context) {
+        context.stopForeground(true);
+    }
 }

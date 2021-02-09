@@ -17,63 +17,64 @@
 
 package org.connectbot.util;
 
-import org.connectbot.R;
-
 import android.os.Bundle;
+import android.view.View;
+import android.widget.SeekBar;
+
 import androidx.preference.DialogPreference;
 import androidx.preference.Preference;
 import androidx.preference.PreferenceDialogFragmentCompat;
-import android.view.View;
-import android.widget.SeekBar;
+
+import org.connectbot.R;
 
 /**
  * Created by kenny on 2/20/17.
  */
 
 public class VolumePreferenceFragment extends PreferenceDialogFragmentCompat {
-	private SeekBar mVolumeBar;
+    private SeekBar mVolumeBar;
 
-	public VolumePreferenceFragment() {
-	}
+    public VolumePreferenceFragment() {
+    }
 
-	public static VolumePreferenceFragment newInstance(Preference preference) {
-		VolumePreferenceFragment fragment = new VolumePreferenceFragment();
-		Bundle bundle = new Bundle(1);
-		bundle.putString("key", preference.getKey());
-		fragment.setArguments(bundle);
-		return fragment;
-	}
+    public static VolumePreferenceFragment newInstance(Preference preference) {
+        VolumePreferenceFragment fragment = new VolumePreferenceFragment();
+        Bundle bundle = new Bundle(1);
+        bundle.putString("key", preference.getKey());
+        fragment.setArguments(bundle);
+        return fragment;
+    }
 
-	@Override
-	protected void onBindDialogView(View view) {
-		super.onBindDialogView(view);
+    @Override
+    protected void onBindDialogView(View view) {
+        super.onBindDialogView(view);
 
-		mVolumeBar = view.findViewById(R.id.volume_bar);
+        mVolumeBar = view.findViewById(R.id.volume_bar);
 
-		Integer volumeLevel = null;
-		DialogPreference preference = getPreference();
-		if (preference instanceof VolumePreference) {
-			volumeLevel = ((VolumePreference) preference).getVolume();
-		}
+        Integer volumeLevel = null;
+        DialogPreference preference = getPreference();
+        if (preference instanceof VolumePreference) {
+            volumeLevel = ((VolumePreference) preference).getVolume();
+        }
 
-		if (volumeLevel != null) {
-			mVolumeBar.setProgress(volumeLevel);
-		}
-	}
+        if (volumeLevel != null) {
+            mVolumeBar.setProgress(volumeLevel);
+        }
+    }
 
-	@Override
-	public void onDialogClosed(boolean positiveResult) {
-		if (positiveResult) {
-			int volumeLevel = mVolumeBar.getProgress();
+    @Override
+    public void onDialogClosed(boolean positiveResult) {
+        if (positiveResult) {
+            int volumeLevel = mVolumeBar.getProgress();
 
-			DialogPreference preference = getPreference();
-			if (preference instanceof VolumePreference) {
-				VolumePreference volumePreference = (VolumePreference) preference;
-				if (volumePreference.callChangeListener(volumeLevel)) {
-					volumePreference.setVolume(volumeLevel);
-				}
-			}
-		}
-	}
+            DialogPreference preference = getPreference();
+            if (preference instanceof VolumePreference) {
+                VolumePreference volumePreference = (VolumePreference) preference;
+                if (volumePreference.callChangeListener(volumeLevel)) {
+                    volumePreference.setVolume(volumeLevel);
+                }
+            }
+        }
+    }
 
 }

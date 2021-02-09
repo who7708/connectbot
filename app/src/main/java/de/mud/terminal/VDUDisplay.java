@@ -29,12 +29,15 @@ package de.mud.terminal;
  * Generic display
  */
 public interface VDUDisplay {
-  public void redraw();
-  public void updateScrollBar();
+    void redraw();
 
-  public void setVDUBuffer(VDUBuffer buffer);
-  public VDUBuffer getVDUBuffer();
-  
-  public void setColor(int index, int red, int green, int blue);
-  public void resetColors();
+    void updateScrollBar();
+
+    void setVDUBuffer(VDUBuffer buffer);
+
+    VDUBuffer getVDUBuffer();
+
+    void setColor(int index, int red, int green, int blue);
+
+    void resetColors();
 }

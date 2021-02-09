@@ -26,176 +26,187 @@ import de.mud.terminal.VDUBuffer;
  * left and right to keep it in the correct orientation.
  */
 public class SelectionArea {
-	private int top;
-	private int bottom;
-	private int left;
-	private int right;
-	private int maxColumns;
-	private int maxRows;
-	private boolean selectingOrigin;
+    private int top;
+    private int bottom;
+    private int left;
+    private int right;
+    private int maxColumns;
+    private int maxRows;
+    private boolean selectingOrigin;
 
-	public SelectionArea() {
-		reset();
-	}
+    public SelectionArea() {
+        reset();
+    }
 
-	public final void reset() {
-		top = left = bottom = right = 0;
-		selectingOrigin = true;
-	}
+    public final void reset() {
+        top = left = bottom = right = 0;
+        selectingOrigin = true;
+    }
 
-	/**
-	 * @param columns
-	 * @param rows
-	 */
-	public void setBounds(int columns, int rows) {
-		maxColumns = columns - 1;
-		maxRows = rows - 1;
-	}
+    /**
+     * @param columns
+     * @param rows
+     */
+    public void setBounds(int columns, int rows) {
+        maxColumns = columns - 1;
+        maxRows = rows - 1;
+    }
 
-	private int checkBounds(int value, int max) {
-		if (value < 0)
-			return 0;
-		else if (value > max)
-			return max;
-		else
-			return value;
-	}
+    private int checkBounds(int value, int max) {
+        if (value < 0) {
+            return 0;
+        } else if (value > max) {
+            return max;
+        } else {
+            return value;
+        }
+    }
 
-	public boolean isSelectingOrigin() {
-		return selectingOrigin;
-	}
+    public boolean isSelectingOrigin() {
+        return selectingOrigin;
+    }
 
-	public void finishSelectingOrigin() {
-		selectingOrigin = false;
-	}
+    public void finishSelectingOrigin() {
+        selectingOrigin = false;
+    }
 
-	public void decrementRow() {
-		if (selectingOrigin)
-			setTop(top - 1);
-		else
-			setBottom(bottom - 1);
-	}
+    public void decrementRow() {
+        if (selectingOrigin) {
+            setTop(top - 1);
+        } else {
+            setBottom(bottom - 1);
+        }
+    }
 
-	public void incrementRow() {
-		if (selectingOrigin)
-			setTop(top + 1);
-		else
-			setBottom(bottom + 1);
-	}
+    public void incrementRow() {
+        if (selectingOrigin) {
+            setTop(top + 1);
+        } else {
+            setBottom(bottom + 1);
+        }
+    }
 
-	public void setRow(int row) {
-		if (selectingOrigin)
-			setTop(row);
-		else
-			setBottom(row);
-	}
+    public void setRow(int row) {
+        if (selectingOrigin) {
+            setTop(row);
+        } else {
+            setBottom(row);
+        }
+    }
 
-	private void setTop(int top) {
-		this.top = bottom = checkBounds(top, maxRows);
-	}
+    private void setTop(int top) {
+        this.top = bottom = checkBounds(top, maxRows);
+    }
 
-	public int getTop() {
-		return Math.min(top, bottom);
-	}
+    public int getTop() {
+        return Math.min(top, bottom);
+    }
 
-	private void setBottom(int bottom) {
-		this.bottom = checkBounds(bottom, maxRows);
-	}
+    private void setBottom(int bottom) {
+        this.bottom = checkBounds(bottom, maxRows);
+    }
 
-	public int getBottom() {
-		return Math.max(top, bottom);
-	}
+    public int getBottom() {
+        return Math.max(top, bottom);
+    }
 
-	public void decrementColumn() {
-		if (selectingOrigin)
-			setLeft(left - 1);
-		else
-			setRight(right - 1);
-	}
+    public void decrementColumn() {
+        if (selectingOrigin) {
+            setLeft(left - 1);
+        } else {
+            setRight(right - 1);
+        }
+    }
 
-	public void incrementColumn() {
-		if (selectingOrigin)
-			setLeft(left + 1);
-		else
-			setRight(right + 1);
-	}
+    public void incrementColumn() {
+        if (selectingOrigin) {
+            setLeft(left + 1);
+        } else {
+            setRight(right + 1);
+        }
+    }
 
-	public void setColumn(int column) {
-		if (selectingOrigin)
-			setLeft(column);
-		else
-			setRight(column);
-	}
+    public void setColumn(int column) {
+        if (selectingOrigin) {
+            setLeft(column);
+        } else {
+            setRight(column);
+        }
+    }
 
-	private void setLeft(int left) {
-		this.left = right = checkBounds(left, maxColumns);
-	}
+    private void setLeft(int left) {
+        this.left = right = checkBounds(left, maxColumns);
+    }
 
-	public int getLeft() {
-		return Math.min(left, right);
-	}
+    public int getLeft() {
+        return Math.min(left, right);
+    }
 
-	private void setRight(int right) {
-		this.right = checkBounds(right, maxColumns);
-	}
+    private void setRight(int right) {
+        this.right = checkBounds(right, maxColumns);
+    }
 
-	public int getRight() {
-		return Math.max(left, right);
-	}
+    public int getRight() {
+        return Math.max(left, right);
+    }
 
-	public String copyFrom(VDUBuffer vb) {
-		int size = (getRight() - getLeft() + 1) * (getBottom() - getTop() + 1);
+    public String copyFrom(VDUBuffer vb) {
+        int size = (getRight() - getLeft() + 1) * (getBottom() - getTop() + 1);
 
-		StringBuilder buffer = new StringBuilder(size);
+        StringBuilder buffer = new StringBuilder(size);
 
-		for (int y = getTop(); y <= getBottom(); y++) {
-			int lastNonSpace = buffer.length();
+        for (int y = getTop(); y <= getBottom(); y++) {
+            int lastNonSpace = buffer.length();
 
-			for (int x = getLeft(); x <= getRight(); x++) {
-				// only copy printable chars
-				char c = vb.getChar(x, y);
+            for (int x = getLeft(); x <= getRight(); x++) {
+                // only copy printable chars
+                char c = vb.getChar(x, y);
 
-				if (!Character.isDefined(c) ||
-						(Character.isISOControl(c) && c != '\t'))
-					c = ' ';
+                if (!Character.isDefined(c) ||
+                        (Character.isISOControl(c) && c != '\t')) {
+                    c = ' ';
+                }
 
-				if (c != ' ')
-					lastNonSpace = buffer.length();
+                if (c != ' ') {
+                    lastNonSpace = buffer.length();
+                }
 
-				buffer.append(c);
-			}
+                buffer.append(c);
+            }
 
-			// Don't leave a bunch of spaces in our copy buffer.
-			if (buffer.length() > lastNonSpace)
-				buffer.delete(lastNonSpace + 1, buffer.length());
+            // Don't leave a bunch of spaces in our copy buffer.
+            if (buffer.length() > lastNonSpace) {
+                buffer.delete(lastNonSpace + 1, buffer.length());
+            }
 
-			if (y != bottom)
-				buffer.append('\n');
-		}
+            if (y != bottom) {
+                buffer.append('\n');
+            }
+        }
 
-		return buffer.toString();
-	}
+        return buffer.toString();
+    }
 
-	@Override
-	public String toString() {
-		StringBuilder buffer = new StringBuilder();
+    @Override
+    public String toString() {
+        StringBuilder buffer = new StringBuilder();
 
-		buffer.append("SelectionArea[top=");
-		buffer.append(top);
-		buffer.append(", bottom=");
-		buffer.append(bottom);
-		buffer.append(", left=");
-		buffer.append(left);
-		buffer.append(", right=");
-		buffer.append(right);
-		buffer.append(", maxColumns=");
-		buffer.append(maxColumns);
-		buffer.append(", maxRows=");
-		buffer.append(maxRows);
-		buffer.append(", isSelectingOrigin=");
-		buffer.append(isSelectingOrigin());
-		buffer.append(']');
+        buffer.append("SelectionArea[top=");
+        buffer.append(top);
+        buffer.append(", bottom=");
+        buffer.append(bottom);
+        buffer.append(", left=");
+        buffer.append(left);
+        buffer.append(", right=");
+        buffer.append(right);
+        buffer.append(", maxColumns=");
+        buffer.append(maxColumns);
+        buffer.append(", maxRows=");
+        buffer.append(maxRows);
+        buffer.append(", isSelectingOrigin=");
+        buffer.append(isSelectingOrigin());
+        buffer.append(']');
 
-		return buffer.toString();
-	}
+        return buffer.toString();
+    }
 }

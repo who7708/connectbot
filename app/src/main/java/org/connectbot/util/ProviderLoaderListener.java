@@ -22,6 +22,7 @@ package org.connectbot.util;
  */
 
 public interface ProviderLoaderListener {
-	void onProviderLoaderSuccess();
-	void onProviderLoaderError();
+    void onProviderLoaderSuccess();
+
+    void onProviderLoaderError();
 }

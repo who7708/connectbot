@@ -19,13 +19,11 @@ package org.connectbot.service;
 
 /**
  * @author Kenny Root
- *
  */
 public interface FontSizeChangedListener {
 
-	/**
-	 * @param sizeDp
-	 *            new font size in dp
-	 */
-	void onFontSizeChanged(float sizeDp);
+    /**
+     * @param sizeDp new font size in dp
+     */
+    void onFontSizeChanged(float sizeDp);
 }

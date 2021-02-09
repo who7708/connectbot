@@ -23,7 +23,7 @@ import java.security.KeyPair;
  * Created by kenny on 6/6/16.
  */
 public interface OnKeyGeneratedListener {
-	void onGenerationError(Exception e);
+    void onGenerationError(Exception e);
 
-	void onGenerationSuccess(KeyPair keyPair);
+    void onGenerationSuccess(KeyPair keyPair);
 }

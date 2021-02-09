@@ -29,140 +29,140 @@ import android.util.Log;
 
 /**
  * @author kroot
- *
  */
 public class ConnectivityReceiver extends BroadcastReceiver {
-	private static final String TAG = "CB.ConnectivityManager";
+    private static final String TAG = "CB.ConnectivityManager";
 
-	private boolean mIsConnected = false;
+    private boolean mIsConnected = false;
 
-	final private TerminalManager mTerminalManager;
+    final private TerminalManager mTerminalManager;
 
-	final private WifiLock mWifiLock;
+    final private WifiLock mWifiLock;
 
-	private int mNetworkRef = 0;
+    private int mNetworkRef = 0;
 
-	private boolean mLockingWifi;
+    private boolean mLockingWifi;
 
-	private Object[] mLock = new Object[0];
+    private final Object[] mLock = new Object[0];
 
-	public ConnectivityReceiver(TerminalManager manager, boolean lockingWifi) {
-		mTerminalManager = manager;
+    public ConnectivityReceiver(TerminalManager manager, boolean lockingWifi) {
+        mTerminalManager = manager;
 
-		final ConnectivityManager cm =
-				(ConnectivityManager) manager.getSystemService(Context.CONNECTIVITY_SERVICE);
+        final ConnectivityManager cm =
+                (ConnectivityManager) manager.getSystemService(Context.CONNECTIVITY_SERVICE);
 
-		final WifiManager wm = (WifiManager) manager.getApplicationContext().getSystemService(Context.WIFI_SERVICE);
-		mWifiLock = wm.createWifiLock(TAG);
+        final WifiManager wm = (WifiManager) manager.getApplicationContext().getSystemService(Context.WIFI_SERVICE);
+        mWifiLock = wm.createWifiLock(TAG);
 
-		final NetworkInfo info = cm.getActiveNetworkInfo();
-		if (info != null) {
-			mIsConnected = (info.getState() == State.CONNECTED);
-		}
+        final NetworkInfo info = cm.getActiveNetworkInfo();
+        if (info != null) {
+            mIsConnected = (info.getState() == State.CONNECTED);
+        }
 
-		mLockingWifi = lockingWifi;
+        mLockingWifi = lockingWifi;
 
-		final IntentFilter filter = new IntentFilter();
-		filter.addAction(ConnectivityManager.CONNECTIVITY_ACTION);
-		manager.registerReceiver(this, filter);
-	}
+        final IntentFilter filter = new IntentFilter();
+        filter.addAction(ConnectivityManager.CONNECTIVITY_ACTION);
+        manager.registerReceiver(this, filter);
+    }
 
-	/* (non-Javadoc)
-	 * @see android.content.BroadcastReceiver#onReceive(android.content.Context, android.content.Intent)
-	 */
-	@Override
-	public void onReceive(Context context, Intent intent) {
-		final String action = intent.getAction();
+    /* (non-Javadoc)
+     * @see android.content.BroadcastReceiver#onReceive(android.content.Context, android.content.Intent)
+     */
+    @Override
+    public void onReceive(Context context, Intent intent) {
+        final String action = intent.getAction();
 
-		if (!action.equals(ConnectivityManager.CONNECTIVITY_ACTION)) {
-			Log.w(TAG, "onReceived() called: " + intent);
-			return;
-		}
+        if (!action.equals(ConnectivityManager.CONNECTIVITY_ACTION)) {
+            Log.w(TAG, "onReceived() called: " + intent);
+            return;
+        }
 
-		boolean noConnectivity = intent.getBooleanExtra(ConnectivityManager.EXTRA_NO_CONNECTIVITY, false);
-		boolean isFailover = intent.getBooleanExtra(ConnectivityManager.EXTRA_IS_FAILOVER, false);
+        boolean noConnectivity = intent.getBooleanExtra(ConnectivityManager.EXTRA_NO_CONNECTIVITY, false);
+        boolean isFailover = intent.getBooleanExtra(ConnectivityManager.EXTRA_IS_FAILOVER, false);
 
-		Log.d(TAG, "onReceived() called; noConnectivity? " + noConnectivity + "; isFailover? " + isFailover);
+        Log.d(TAG, "onReceived() called; noConnectivity? " + noConnectivity + "; isFailover? " + isFailover);
 
-		if (noConnectivity && !isFailover && mIsConnected) {
-			mIsConnected = false;
-			mTerminalManager.onConnectivityLost();
-		} else if (!mIsConnected) {
-			NetworkInfo info = (NetworkInfo) intent.getExtras()
-					.get(ConnectivityManager.EXTRA_NETWORK_INFO);
+        if (noConnectivity && !isFailover && mIsConnected) {
+            mIsConnected = false;
+            mTerminalManager.onConnectivityLost();
+        } else if (!mIsConnected) {
+            NetworkInfo info = (NetworkInfo) intent.getExtras()
+                    .get(ConnectivityManager.EXTRA_NETWORK_INFO);
 
-			mIsConnected = (info.getState() == State.CONNECTED);
-			if (mIsConnected) {
-				mTerminalManager.onConnectivityRestored();
-			}
-		}
-	}
+            mIsConnected = (info.getState() == State.CONNECTED);
+            if (mIsConnected) {
+                mTerminalManager.onConnectivityRestored();
+            }
+        }
+    }
 
-	/**
-	 *
-	 */
-	public void cleanup() {
-		if (mWifiLock.isHeld())
-			mWifiLock.release();
+    /**
+     *
+     */
+    public void cleanup() {
+        if (mWifiLock.isHeld()) {
+            mWifiLock.release();
+        }
 
-		mTerminalManager.unregisterReceiver(this);
-	}
+        mTerminalManager.unregisterReceiver(this);
+    }
 
-	/**
-	 * Increase the number of things using the network. Acquire a Wi-Fi lock
-	 * if necessary.
-	 */
-	public void incRef() {
-		synchronized (mLock) {
-			mNetworkRef  += 1;
+    /**
+     * Increase the number of things using the network. Acquire a Wi-Fi lock
+     * if necessary.
+     */
+    public void incRef() {
+        synchronized (mLock) {
+            mNetworkRef += 1;
 
-			acquireWifiLockIfNecessaryLocked();
-		}
-	}
+            acquireWifiLockIfNecessaryLocked();
+        }
+    }
 
-	/**
-	 * Decrease the number of things using the network. Release the Wi-Fi lock
-	 * if necessary.
-	 */
-	public void decRef() {
-		synchronized (mLock) {
-			mNetworkRef -= 1;
+    /**
+     * Decrease the number of things using the network. Release the Wi-Fi lock
+     * if necessary.
+     */
+    public void decRef() {
+        synchronized (mLock) {
+            mNetworkRef -= 1;
 
-			releaseWifiLockIfNecessaryLocked();
-		}
-	}
+            releaseWifiLockIfNecessaryLocked();
+        }
+    }
 
-	/**
-	 * @param lockingWifi
-	 */
-	public void setWantWifiLock(boolean lockingWifi) {
-		synchronized (mLock) {
-			mLockingWifi = lockingWifi;
+    /**
+     * @param lockingWifi
+     */
+    public void setWantWifiLock(boolean lockingWifi) {
+        synchronized (mLock) {
+            mLockingWifi = lockingWifi;
 
-			if (mLockingWifi) {
-				acquireWifiLockIfNecessaryLocked();
-			} else {
-				releaseWifiLockIfNecessaryLocked();
-			}
-		}
-	}
+            if (mLockingWifi) {
+                acquireWifiLockIfNecessaryLocked();
+            } else {
+                releaseWifiLockIfNecessaryLocked();
+            }
+        }
+    }
 
-	private void acquireWifiLockIfNecessaryLocked() {
-		if (mLockingWifi && mNetworkRef > 0 && !mWifiLock.isHeld()) {
-			mWifiLock.acquire();
-		}
-	}
+    private void acquireWifiLockIfNecessaryLocked() {
+        if (mLockingWifi && mNetworkRef > 0 && !mWifiLock.isHeld()) {
+            mWifiLock.acquire();
+        }
+    }
 
-	private void releaseWifiLockIfNecessaryLocked() {
-		if (mNetworkRef == 0 && mWifiLock.isHeld()) {
-			mWifiLock.release();
-		}
-	}
+    private void releaseWifiLockIfNecessaryLocked() {
+        if (mNetworkRef == 0 && mWifiLock.isHeld()) {
+            mWifiLock.release();
+        }
+    }
 
-	/**
-	 * @return whether we're connected to a network
-	 */
-	public boolean isConnected() {
-		return mIsConnected;
-	}
+    /**
+     * @return whether we're connected to a network
+     */
+    public boolean isConnected() {
+        return mIsConnected;
+    }
 }

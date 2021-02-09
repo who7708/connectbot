@@ -17,65 +17,64 @@
 
 package org.connectbot;
 
-import org.connectbot.util.Version;
-
 import android.annotation.SuppressLint;
 import android.content.Intent;
 import android.os.Bundle;
-import androidx.appcompat.app.AppCompatActivity;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.View.OnClickListener;
 import android.widget.Button;
 
+import androidx.appcompat.app.AppCompatActivity;
+
+import org.connectbot.util.Version;
+
 /**
  * @author Kenny Root
- *
  */
 public class HelpActivity extends AppCompatActivity {
-	private LayoutInflater inflater = null;
+    private LayoutInflater inflater = null;
 
+    @Override
+    public void onCreate(Bundle icicle) {
+        super.onCreate(icicle);
+        setContentView(R.layout.act_help);
 
-	@Override
-	public void onCreate(Bundle icicle) {
-		super.onCreate(icicle);
-		setContentView(R.layout.act_help);
+        Version.setVersionText(getApplicationContext(), findViewById(R.id.version));
 
-		Version.setVersionText(getApplicationContext(), findViewById(R.id.version));
+        Button hintsButton = findViewById(R.id.hints_button);
+        hintsButton.setOnClickListener(new OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Intent intent = new Intent(HelpActivity.this, HintsActivity.class);
+                HelpActivity.this.startActivity(intent);
+            }
+        });
 
-		Button hintsButton = findViewById(R.id.hints_button);
-		hintsButton.setOnClickListener(new OnClickListener() {
-			@Override
-			public void onClick(View v) {
-				Intent intent = new Intent(HelpActivity.this, HintsActivity.class);
-				HelpActivity.this.startActivity(intent);
-			}
-		});
+        inflater = LayoutInflater.from(this);
+        Button shortcutsButton = findViewById(R.id.shortcuts_button);
+        shortcutsButton.setOnClickListener(new OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                @SuppressLint("InflateParams")  // Dialogs do not have a parent view.
+                final View shortcuts = inflater.inflate(R.layout.dia_keyboard_shortcuts,
+                        null, false);
 
-		inflater = LayoutInflater.from(this);
-		Button shortcutsButton = findViewById(R.id.shortcuts_button);
-		shortcutsButton.setOnClickListener(new OnClickListener() {
-			@Override
-			public void onClick(View v) {
-				@SuppressLint("InflateParams")  // Dialogs do not have a parent view.
-				final View shortcuts = inflater.inflate(R.layout.dia_keyboard_shortcuts,
-						null, false);
+                new androidx.appcompat.app.AlertDialog.Builder(
+                        HelpActivity.this, R.style.AlertDialogTheme)
+                        .setView(shortcuts)
+                        .setTitle(R.string.keyboard_shortcuts)
+                        .show();
+            }
+        });
 
-				new androidx.appcompat.app.AlertDialog.Builder(
-								HelpActivity.this, R.style.AlertDialogTheme)
-						.setView(shortcuts)
-						.setTitle(R.string.keyboard_shortcuts)
-						.show();
-			}
-		});
-
-		Button eulaButton = findViewById(R.id.eula_button);
-		eulaButton.setOnClickListener(new OnClickListener() {
-			@Override
-			public void onClick(View v) {
-				Intent intent = new Intent(HelpActivity.this, EulaActivity.class);
-				HelpActivity.this.startActivity(intent);
-			}
-		});
-	}
+        Button eulaButton = findViewById(R.id.eula_button);
+        eulaButton.setOnClickListener(new OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Intent intent = new Intent(HelpActivity.this, EulaActivity.class);
+                HelpActivity.this.startActivity(intent);
+            }
+        });
+    }
 }
