@@ -13,7 +13,7 @@ extern "C" {
  * Signature: (Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;[I)Ljava/io/FileDescriptor;
  */
 JNIEXPORT jobject JNICALL Java_com_google_ase_Exec_createSubprocess
-  (JNIEnv *, jclass, jstring, jstring, jstring, jintArray);
+        (JNIEnv *, jclass, jstring, jstring, jstring, jintArray);
 
 /*
  * Class:     com_google_ase_Exec
@@ -21,7 +21,7 @@ JNIEXPORT jobject JNICALL Java_com_google_ase_Exec_createSubprocess
  * Signature: (Ljava/io/FileDescriptor;IIII)V
  */
 JNIEXPORT void JNICALL Java_com_google_ase_Exec_setPtyWindowSize
-  (JNIEnv *, jclass, jobject, jint, jint, jint, jint);
+        (JNIEnv *, jclass, jobject, jint, jint, jint, jint);
 
 /*
  * Class:     com_google_ase_Exec
@@ -29,7 +29,7 @@ JNIEXPORT void JNICALL Java_com_google_ase_Exec_setPtyWindowSize
  * Signature: (I)I
  */
 JNIEXPORT jint JNICALL Java_com_google_ase_Exec_waitFor
-  (JNIEnv *, jclass, jint);
+        (JNIEnv *, jclass, jint);
 
 /*
  * Class:     com_google_ase_Exec
@@ -37,7 +37,7 @@ JNIEXPORT jint JNICALL Java_com_google_ase_Exec_waitFor
  * Signature: ()I
  */
 JNIEXPORT jint JNICALL Java_com_google_ase_Exec_register
-  (JNIEnv *, jclass);
+        (JNIEnv *, jclass);
 
 #ifdef __cplusplus
 }
