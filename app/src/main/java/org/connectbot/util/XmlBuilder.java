@@ -19,7 +19,6 @@ package org.connectbot.util;
 
 import com.trilead.ssh2.crypto.Base64;
 
-import java.io.UnsupportedEncodingException;
 import java.nio.charset.StandardCharsets;
 
 /**

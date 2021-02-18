@@ -169,9 +169,9 @@ public class VDUBuffer {
     public void putChar(int c, int l, char ch, long attributes) {
         charArray[screenBase + l][c] = ch;
         charAttributes[screenBase + l][c] = attributes;
-      if (l < height) {
-        update[l + 1] = true;
-      }
+        if (l < height) {
+            update[l + 1] = true;
+        }
     }
 
     /**
@@ -287,9 +287,9 @@ public class VDUBuffer {
      * @see #redraw
      */
     public void putString(int c, int l, String s, long attributes) {
-      for (int i = 0; i < s.length() && c + i < width; i++) {
-        putChar(c + i, l, s.charAt(i), attributes);
-      }
+        for (int i = 0; i < s.length() && c + i < width; i++) {
+            putChar(c + i, l, s.charAt(i), attributes);
+        }
     }
 
     /**
@@ -357,9 +357,9 @@ public class VDUBuffer {
         int newWindowBase = windowBase;
         int newBufSize = bufSize;
 
-      if (l > bottomMargin) /* We do not scroll below bottom margin (below the scrolling region). */ {
-        return;
-      }
+        if (l > bottomMargin) /* We do not scroll below bottom margin (below the scrolling region). */ {
+            return;
+        }
         int top = (l < topMargin ?
                 0 : (l > bottomMargin ?
                 (bottomMargin + 1 < height ?
@@ -372,13 +372,13 @@ public class VDUBuffer {
         // System.out.println("l is "+l+", top is "+top+", bottom is "+bottom+", bottomargin is "+bottomMargin+", topMargin is "+topMargin);
 
         if (scrollDown) {
-          if (n > (bottom - top)) {
-            n = (bottom - top);
-          }
+            if (n > (bottom - top)) {
+                n = (bottom - top);
+            }
             int size = bottom - l - (n - 1);
-          if (size < 0) {
-            size = 0;
-          }
+            if (size < 0) {
+                size = 0;
+            }
             cbuf = new char[size][width];
             abuf = new long[size][width];
 
@@ -393,9 +393,9 @@ public class VDUBuffer {
             abuf = charAttributes;
         } else {
             try {
-              if (n > (bottom - top) + 1) {
-                n = (bottom - top) + 1;
-              }
+                if (n > (bottom - top) + 1) {
+                    n = (bottom - top) + 1;
+                }
                 if (bufSize < maxBufSize) {
                     if (bufSize + n > maxBufSize) {
                         offset = n - (maxBufSize - bufSize);
@@ -501,11 +501,11 @@ public class VDUBuffer {
         windowBase = newWindowBase;
         bufSize = newBufSize;
 
-      if (scrollDown) {
-        markLine(l, bottom - l + 1);
-      } else {
-        markLine(top, l - top + 1);
-      }
+        if (scrollDown) {
+            markLine(l, bottom - l + 1);
+        } else {
+            markLine(top, l - top + 1);
+        }
 
         display.updateScrollBar();
     }
@@ -633,11 +633,11 @@ public class VDUBuffer {
      * @see #getBufferSize
      */
     public void setWindowBase(int line) {
-      if (line > screenBase) {
-        line = screenBase;
-      } else if (line < 0) {
-        line = 0;
-      }
+        if (line > screenBase) {
+            line = screenBase;
+        } else if (line < 0) {
+            line = 0;
+        }
         windowBase = line;
         update[0] = true;
         redraw();
@@ -659,16 +659,16 @@ public class VDUBuffer {
      * @param l2 line that is the bottom
      */
     public void setMargins(int l1, int l2) {
-      if (l1 > l2) {
-        return;
-      }
+        if (l1 > l2) {
+            return;
+        }
 
-      if (l1 < 0) {
-        l1 = 0;
-      }
-      if (l2 >= height) {
-        l2 = height - 1;
-      }
+        if (l1 < 0) {
+            l1 = 0;
+        }
+        if (l2 >= height) {
+            l2 = height - 1;
+        }
 
         topMargin = l1;
         bottomMargin = l2;
@@ -682,18 +682,18 @@ public class VDUBuffer {
      * @param l line that is the margin
      */
     public void setTopMargin(int l) {
-      if (l > bottomMargin) {
-        topMargin = bottomMargin;
-        bottomMargin = l;
-      } else {
-        topMargin = l;
-      }
-      if (topMargin < 0) {
-        topMargin = 0;
-      }
-      if (bottomMargin >= height) {
-        bottomMargin = height - 1;
-      }
+        if (l > bottomMargin) {
+            topMargin = bottomMargin;
+            bottomMargin = l;
+        } else {
+            topMargin = l;
+        }
+        if (topMargin < 0) {
+            topMargin = 0;
+        }
+        if (bottomMargin >= height) {
+            bottomMargin = height - 1;
+        }
     }
 
     /**
@@ -711,18 +711,18 @@ public class VDUBuffer {
      * @param l line that is the margin
      */
     public void setBottomMargin(int l) {
-      if (l < topMargin) {
-        bottomMargin = topMargin;
-        topMargin = l;
-      } else {
-        bottomMargin = l;
-      }
-      if (topMargin < 0) {
-        topMargin = 0;
-      }
-      if (bottomMargin >= height) {
-        bottomMargin = height - 1;
-      }
+        if (l < topMargin) {
+            bottomMargin = topMargin;
+            topMargin = l;
+        } else {
+            bottomMargin = l;
+        }
+        if (topMargin < 0) {
+            topMargin = 0;
+        }
+        if (bottomMargin >= height) {
+            bottomMargin = height - 1;
+        }
     }
 
     /**
@@ -738,20 +738,20 @@ public class VDUBuffer {
      * @param amount new size of the buffer
      */
     public void setBufferSize(int amount) {
-      if (amount < height) {
-        amount = height;
-      }
+        if (amount < height) {
+            amount = height;
+        }
         if (amount < maxBufSize) {
             char[][] cbuf = new char[amount][width];
             long[][] abuf = new long[amount][width];
             int copyStart = bufSize - amount < 0 ? 0 : bufSize - amount;
             int copyCount = bufSize - amount < 0 ? bufSize : amount;
-          if (charArray != null) {
-            System.arraycopy(charArray, copyStart, cbuf, 0, copyCount);
-          }
-          if (charAttributes != null) {
-            System.arraycopy(charAttributes, copyStart, abuf, 0, copyCount);
-          }
+            if (charArray != null) {
+                System.arraycopy(charArray, copyStart, cbuf, 0, copyCount);
+            }
+            if (charAttributes != null) {
+                System.arraycopy(charAttributes, copyStart, abuf, 0, copyCount);
+            }
             charArray = cbuf;
             charAttributes = abuf;
             bufSize = copyCount;
@@ -795,17 +795,17 @@ public class VDUBuffer {
         int maxSize = bufSize;
         int oldAbsR = screenBase + getCursorRow();
 
-      if (w < 1 || h < 1) {
-        return;
-      }
+        if (w < 1 || h < 1) {
+            return;
+        }
 
-      if (debug > 0) {
-        System.err.println("VDU: screen size [" + w + "," + h + "]");
-      }
+        if (debug > 0) {
+            System.err.println("VDU: screen size [" + w + "," + h + "]");
+        }
 
-      if (h > maxBufSize) {
-        maxBufSize = h;
-      }
+        if (h > maxBufSize) {
+            maxBufSize = h;
+        }
 
         if (h > bufSize) {
             bufSize = h;
@@ -813,13 +813,13 @@ public class VDUBuffer {
             windowBase = 0;
         }
 
-      if (windowBase + h >= bufSize) {
-        windowBase = bufSize - h;
-      }
+        if (windowBase + h >= bufSize) {
+            windowBase = bufSize - h;
+        }
 
-      if (screenBase + h >= bufSize) {
-        screenBase = bufSize - h;
-      }
+        if (screenBase + h >= bufSize) {
+            screenBase = bufSize - h;
+        }
 
         cbuf = new char[bufSize][w];
         abuf = new long[bufSize][w];
@@ -828,9 +828,9 @@ public class VDUBuffer {
             Arrays.fill(cbuf[i], ' ');
         }
 
-      if (bufSize < maxSize) {
-        maxSize = bufSize;
-      }
+        if (bufSize < maxSize) {
+            maxSize = bufSize;
+        }
 
         int rowLength;
         if (charArray != null && charAttributes != null) {
@@ -844,23 +844,23 @@ public class VDUBuffer {
         }
 
         int C = getCursorColumn();
-      if (C < 0) {
-        C = 0;
-      } else if (C >= w) {
-        C = w - 1;
-      }
+        if (C < 0) {
+            C = 0;
+        } else if (C >= w) {
+            C = w - 1;
+        }
 
         int R = getCursorRow();
         // If the screen size has grown and now there are more rows on the screen,
         // slide the cursor down to the end of the text.
-      if (R + screenBase <= oldAbsR) {
-        R = oldAbsR - screenBase;
-      }
-      if (R < 0) {
-        R = 0;
-      } else if (R >= h) {
-        R = h - 1;
-      }
+        if (R + screenBase <= oldAbsR) {
+            R = oldAbsR - screenBase;
+        }
+        if (R < 0) {
+            R = 0;
+        } else if (R >= h) {
+            R = h - 1;
+        }
 
         setCursorPosition(C, R);
 
@@ -900,9 +900,9 @@ public class VDUBuffer {
      * @see #redraw
      */
     public void markLine(int l, int n) {
-      for (int i = 0; (i < n) && (l + i < height); i++) {
-        update[l + i + 1] = true;
-      }
+        for (int i = 0; (i < n) && (l + i < height); i++) {
+            update[l + i + 1] = true;
+        }
     }
 
     //  private static int checkBounds(int value, int lower, int upper) {
@@ -925,8 +925,8 @@ public class VDUBuffer {
      * Trigger a redraw on the display.
      */
     protected void redraw() {
-      if (display != null) {
-        display.redraw();
-      }
+        if (display != null) {
+            display.redraw();
+        }
     }
 }

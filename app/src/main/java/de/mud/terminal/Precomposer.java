@@ -1038,13 +1038,13 @@ public class Precomposer {
         while (max >= min) {
             mid = (min + max) / 2;
             that = precompositions[mid][1] << UNICODE_SHIFT | precompositions[mid][2];
-			if (that < sought) {
-				min = mid + 1;
-			} else if (that > sought) {
-				max = mid - 1;
-			} else {
-				return precompositions[mid][0];
-			}
+            if (that < sought) {
+                min = mid + 1;
+            } else if (that > sought) {
+                max = mid - 1;
+            } else {
+                return precompositions[mid][0];
+            }
         }
 
         // No match; return character without combiner

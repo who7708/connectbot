@@ -257,9 +257,9 @@ public class PubkeyListActivity extends AppCompatListActivity implements EventLi
             File[] files = sdcard.listFiles();
             if (files != null) {
                 for (File file : sdcard.listFiles()) {
-					if (file.isDirectory()) {
-						continue;
-					}
+                    if (file.isDirectory()) {
+                        continue;
+                    }
                     names.add(file.getName());
                 }
             }
@@ -565,12 +565,12 @@ public class PubkeyListActivity extends AppCompatListActivity implements EventLi
                     try {
                         String data = null;
 
-						if (imported) {
-							data = new String(pubkey.getPrivateKey());
-						} else {
-							PrivateKey pk = PubkeyUtils.decodePrivate(pubkey.getPrivateKey(), pubkey.getType());
-							data = PubkeyUtils.exportPEM(pk, null);
-						}
+                        if (imported) {
+                            data = new String(pubkey.getPrivateKey());
+                        } else {
+                            PrivateKey pk = PubkeyUtils.decodePrivate(pubkey.getPrivateKey(), pubkey.getType());
+                            data = PubkeyUtils.exportPEM(pk, null);
+                        }
 
                         clipboard.setText(data);
                     } catch (Exception e) {
@@ -610,18 +610,18 @@ public class PubkeyListActivity extends AppCompatListActivity implements EventLi
                                     }
 
                                     try {
-										if (!pubkey.changePassword(oldPassword, password1)) {
-											new androidx.appcompat.app.AlertDialog.Builder(
-													PubkeyListActivity.this,
-													R.style.AlertDialogTheme)
-													.setMessage(R.string.alert_wrong_password_msg)
-													.setPositiveButton(android.R.string.ok, null)
-													.create().show();
-										} else {
-											PubkeyDatabase pubkeyDb = PubkeyDatabase.get(PubkeyListActivity.this);
-											pubkeyDb.savePubkey(pubkey);
-											updateList();
-										}
+                                        if (!pubkey.changePassword(oldPassword, password1)) {
+                                            new androidx.appcompat.app.AlertDialog.Builder(
+                                                    PubkeyListActivity.this,
+                                                    R.style.AlertDialogTheme)
+                                                    .setMessage(R.string.alert_wrong_password_msg)
+                                                    .setPositiveButton(android.R.string.ok, null)
+                                                    .create().show();
+                                        } else {
+                                            PubkeyDatabase pubkeyDb = PubkeyDatabase.get(PubkeyListActivity.this);
+                                            pubkeyDb.savePubkey(pubkey);
+                                            updateList();
+                                        }
                                     } catch (Exception e) {
                                         Log.e(TAG, "Could not change private key password", e);
                                         new androidx.appcompat.app.AlertDialog.Builder(
@@ -751,11 +751,11 @@ public class PubkeyListActivity extends AppCompatListActivity implements EventLi
             } else {
                 pubkeyHolder.icon.setVisibility(View.VISIBLE);
 
-				if (bound.isKeyLoaded(pubkey.getNickname())) {
-					pubkeyHolder.icon.setImageState(new int[]{android.R.attr.state_checked}, true);
-				} else {
-					pubkeyHolder.icon.setImageState(new int[]{}, true);
-				}
+                if (bound.isKeyLoaded(pubkey.getNickname())) {
+                    pubkeyHolder.icon.setImageState(new int[]{android.R.attr.state_checked}, true);
+                } else {
+                    pubkeyHolder.icon.setImageState(new int[]{}, true);
+                }
             }
         }
 

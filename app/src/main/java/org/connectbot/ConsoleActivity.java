@@ -180,9 +180,9 @@ public class ConsoleActivity extends AppCompatActivity implements BridgeDisconne
             adapter.notifyDataSetChanged();
             final int requestedIndex = bound.getBridges().indexOf(requestedBridge);
 
-			if (requestedBridge != null) {
-				requestedBridge.promptHelper.setHandler(promptHandler);
-			}
+            if (requestedBridge != null) {
+                requestedBridge.promptHelper.setHandler(promptHandler);
+            }
 
             if (requestedIndex != -1) {
                 pager.post(new Runnable() {
@@ -293,9 +293,9 @@ public class ConsoleActivity extends AppCompatActivity implements BridgeDisconne
 
     private void onEmulatedKeyClicked(View v) {
         TerminalView terminal = adapter.getCurrentTerminalView();
-		if (terminal == null) {
-			return;
-		}
+        if (terminal == null) {
+            return;
+        }
 
         if (BuildConfig.DEBUG) {
             Log.d(TAG, "onEmulatedKeyClicked(" + v.getId() + ")");
@@ -423,9 +423,9 @@ public class ConsoleActivity extends AppCompatActivity implements BridgeDisconne
 
     protected PromptHelper getCurrentPromptHelper() {
         TerminalView view = adapter.getCurrentTerminalView();
-		if (view == null) {
-			return null;
-		}
+        if (view == null) {
+            return null;
+        }
         return view.bridge.promptHelper;
     }
 
@@ -470,9 +470,9 @@ public class ConsoleActivity extends AppCompatActivity implements BridgeDisconne
 
     private void hideEmulatedKeys() {
         if (!keyboardAlwaysVisible) {
-			if (keyboardGroupHider != null) {
-				handler.removeCallbacks(keyboardGroupHider);
-			}
+            if (keyboardGroupHider != null) {
+                handler.removeCallbacks(keyboardGroupHider);
+            }
             keyboardGroup.setVisibility(View.GONE);
         }
         hideActionBarIfRequested();
@@ -549,20 +549,20 @@ public class ConsoleActivity extends AppCompatActivity implements BridgeDisconne
         stringPrompt.setOnKeyListener(new OnKeyListener() {
             @Override
             public boolean onKey(View v, int keyCode, KeyEvent event) {
-				if (event.getAction() == KeyEvent.ACTION_UP) {
-					return false;
-				}
-				if (keyCode != KeyEvent.KEYCODE_ENTER) {
-					return false;
-				}
+                if (event.getAction() == KeyEvent.ACTION_UP) {
+                    return false;
+                }
+                if (keyCode != KeyEvent.KEYCODE_ENTER) {
+                    return false;
+                }
 
                 // pass collected password down to current terminal
                 String value = stringPrompt.getText().toString();
 
                 PromptHelper helper = getCurrentPromptHelper();
-				if (helper == null) {
-					return false;
-				}
+                if (helper == null) {
+                    return false;
+                }
                 helper.setResponse(value);
 
                 // finally clear password for next user
@@ -581,9 +581,9 @@ public class ConsoleActivity extends AppCompatActivity implements BridgeDisconne
             @Override
             public void onClick(View v) {
                 PromptHelper helper = getCurrentPromptHelper();
-				if (helper == null) {
-					return;
-				}
+                if (helper == null) {
+                    return;
+                }
                 helper.setResponse(Boolean.TRUE);
                 updatePromptVisible();
             }
@@ -594,9 +594,9 @@ public class ConsoleActivity extends AppCompatActivity implements BridgeDisconne
             @Override
             public void onClick(View v) {
                 PromptHelper helper = getCurrentPromptHelper();
-				if (helper == null) {
-					return;
-				}
+                if (helper == null) {
+                    return;
+                }
                 helper.setResponse(Boolean.FALSE);
                 updatePromptVisible();
             }
@@ -635,9 +635,9 @@ public class ConsoleActivity extends AppCompatActivity implements BridgeDisconne
             @Override
             public void onClick(View view) {
                 View terminal = adapter.getCurrentTerminalView();
-				if (terminal == null) {
-					return;
-				}
+                if (terminal == null) {
+                    return;
+                }
                 InputMethodManager inputMethodManager =
                         (InputMethodManager) getSystemService(Context.INPUT_METHOD_SERVICE);
                 inputMethodManager.toggleSoftInputFromWindow(terminal.getApplicationWindowToken(),
@@ -734,9 +734,9 @@ public class ConsoleActivity extends AppCompatActivity implements BridgeDisconne
                 });
 
         tabs = findViewById(R.id.tabs);
-		if (tabs != null) {
-			setupTabLayoutWithViewPager();
-		}
+        if (tabs != null) {
+            setupTabLayoutWithViewPager();
+        }
 
         pager.setOnClickListener(new OnClickListener() {
             @Override
@@ -806,16 +806,16 @@ public class ConsoleActivity extends AppCompatActivity implements BridgeDisconne
      */
     private void configureOrientation() {
         String rotateDefault;
-		if (getResources().getConfiguration().keyboard == Configuration.KEYBOARD_NOKEYS) {
-			rotateDefault = PreferenceConstants.ROTATION_PORTRAIT;
-		} else {
-			rotateDefault = PreferenceConstants.ROTATION_LANDSCAPE;
-		}
+        if (getResources().getConfiguration().keyboard == Configuration.KEYBOARD_NOKEYS) {
+            rotateDefault = PreferenceConstants.ROTATION_PORTRAIT;
+        } else {
+            rotateDefault = PreferenceConstants.ROTATION_LANDSCAPE;
+        }
 
         String rotate = prefs.getString(PreferenceConstants.ROTATION, rotateDefault);
-		if (PreferenceConstants.ROTATION_DEFAULT.equals(rotate)) {
-			rotate = rotateDefault;
-		}
+        if (PreferenceConstants.ROTATION_DEFAULT.equals(rotate)) {
+            rotate = rotateDefault;
+        }
 
         // request a forced orientation if requested by user
         if (PreferenceConstants.ROTATION_LANDSCAPE.equals(rotate)) {
@@ -850,12 +850,12 @@ public class ConsoleActivity extends AppCompatActivity implements BridgeDisconne
         menu.setQwertyMode(true);
 
         disconnect = menu.add(R.string.list_host_disconnect);
-		if (hardKeyboard) {
-			disconnect.setAlphabeticShortcut('w');
-		}
-		if (!sessionOpen && disconnected) {
-			disconnect.setTitle(R.string.console_menu_close);
-		}
+        if (hardKeyboard) {
+            disconnect.setAlphabeticShortcut('w');
+        }
+        if (!sessionOpen && disconnected) {
+            disconnect.setTitle(R.string.console_menu_close);
+        }
         disconnect.setEnabled(activeTerminal);
         disconnect.setIcon(android.R.drawable.ic_menu_close_clear_cancel);
         disconnect.setOnMenuItemClickListener(new OnMenuItemClickListener() {
@@ -872,9 +872,9 @@ public class ConsoleActivity extends AppCompatActivity implements BridgeDisconne
 
         if (Build.VERSION.SDK_INT < Build.VERSION_CODES.HONEYCOMB) {
             copy = menu.add(R.string.console_menu_copy);
-			if (hardKeyboard) {
-				copy.setAlphabeticShortcut('c');
-			}
+            if (hardKeyboard) {
+                copy.setAlphabeticShortcut('c');
+            }
             MenuItemCompat.setShowAsAction(copy, MenuItemCompat.SHOW_AS_ACTION_IF_ROOM);
             copy.setIcon(R.drawable.ic_action_copy);
             copy.setEnabled(activeTerminal);
@@ -889,9 +889,9 @@ public class ConsoleActivity extends AppCompatActivity implements BridgeDisconne
         }
 
         paste = menu.add(R.string.console_menu_paste);
-		if (hardKeyboard) {
-			paste.setAlphabeticShortcut('v');
-		}
+        if (hardKeyboard) {
+            paste.setAlphabeticShortcut('v');
+        }
         MenuItemCompat.setShowAsAction(paste, MenuItemCompat.SHOW_AS_ACTION_IF_ROOM);
         paste.setIcon(R.drawable.ic_action_paste);
         paste.setEnabled(activeTerminal);
@@ -904,9 +904,9 @@ public class ConsoleActivity extends AppCompatActivity implements BridgeDisconne
         });
 
         portForward = menu.add(R.string.console_menu_portforwards);
-		if (hardKeyboard) {
-			portForward.setAlphabeticShortcut('f');
-		}
+        if (hardKeyboard) {
+            portForward.setAlphabeticShortcut('f');
+        }
         portForward.setIcon(android.R.drawable.ic_menu_manage);
         portForward.setEnabled(sessionOpen && canForwardPorts);
         portForward.setOnMenuItemClickListener(new OnMenuItemClickListener() {
@@ -923,9 +923,9 @@ public class ConsoleActivity extends AppCompatActivity implements BridgeDisconne
         });
 
         urlscan = menu.add(R.string.console_menu_urlscan);
-		if (hardKeyboard) {
-			urlscan.setAlphabeticShortcut('u');
-		}
+        if (hardKeyboard) {
+            urlscan.setAlphabeticShortcut('u');
+        }
         urlscan.setIcon(android.R.drawable.ic_menu_search);
         urlscan.setEnabled(activeTerminal);
         urlscan.setOnMenuItemClickListener(new OnMenuItemClickListener() {
@@ -951,9 +951,9 @@ public class ConsoleActivity extends AppCompatActivity implements BridgeDisconne
         });
 
         resize = menu.add(R.string.console_menu_resize);
-		if (hardKeyboard) {
-			resize.setAlphabeticShortcut('s');
-		}
+        if (hardKeyboard) {
+            resize.setAlphabeticShortcut('s');
+        }
         resize.setIcon(android.R.drawable.ic_menu_crop);
         resize.setEnabled(sessionOpen);
         resize.setOnMenuItemClickListener(new OnMenuItemClickListener() {
@@ -1014,11 +1014,11 @@ public class ConsoleActivity extends AppCompatActivity implements BridgeDisconne
         }
 
         disconnect.setEnabled(activeTerminal);
-		if (sessionOpen || !disconnected) {
-			disconnect.setTitle(R.string.list_host_disconnect);
-		} else {
-			disconnect.setTitle(R.string.console_menu_close);
-		}
+        if (sessionOpen || !disconnected) {
+            disconnect.setTitle(R.string.list_host_disconnect);
+        } else {
+            disconnect.setTitle(R.string.console_menu_close);
+        }
 
         if (Build.VERSION.SDK_INT < Build.VERSION_CODES.HONEYCOMB) {
             copy.setEnabled(activeTerminal);
@@ -1201,12 +1201,12 @@ public class ConsoleActivity extends AppCompatActivity implements BridgeDisconne
             stringPromptGroup.setVisibility(View.VISIBLE);
 
             String instructions = prompt.promptInstructions;
-			if (instructions != null && instructions.length() > 0) {
-				stringPromptInstructions.setVisibility(View.VISIBLE);
-				stringPromptInstructions.setText(instructions);
-			} else {
-				stringPromptInstructions.setVisibility(View.GONE);
-			}
+            if (instructions != null && instructions.length() > 0) {
+                stringPromptInstructions.setVisibility(View.VISIBLE);
+                stringPromptInstructions.setText(instructions);
+            } else {
+                stringPromptInstructions.setVisibility(View.GONE);
+            }
             stringPrompt.setText("");
             stringPrompt.setHint(prompt.promptHint);
             stringPrompt.requestFocus();
@@ -1234,9 +1234,9 @@ public class ConsoleActivity extends AppCompatActivity implements BridgeDisconne
         public void onItemClick(AdapterView<?> arg0, View view, int position, long id) {
             Context context = contextRef.get();
 
-			if (context == null) {
-				return;
-			}
+            if (context == null) {
+                return;
+            }
 
             try {
                 TextView urlView = (TextView) view;
@@ -1258,11 +1258,11 @@ public class ConsoleActivity extends AppCompatActivity implements BridgeDisconne
 
         Log.d(TAG, String.format("onConfigurationChanged; requestedOrientation=%d, newConfig.orientation=%d", getRequestedOrientation(), newConfig.orientation));
         if (bound != null) {
-			bound.setResizeAllowed(!forcedOrientation ||
-					((newConfig.orientation == Configuration.ORIENTATION_LANDSCAPE ||
-							getRequestedOrientation() != ActivityInfo.SCREEN_ORIENTATION_LANDSCAPE) &&
-							(newConfig.orientation == Configuration.ORIENTATION_PORTRAIT ||
-									getRequestedOrientation() != ActivityInfo.SCREEN_ORIENTATION_PORTRAIT)));
+            bound.setResizeAllowed(!forcedOrientation ||
+                    ((newConfig.orientation == Configuration.ORIENTATION_LANDSCAPE ||
+                            getRequestedOrientation() != ActivityInfo.SCREEN_ORIENTATION_LANDSCAPE) &&
+                            (newConfig.orientation == Configuration.ORIENTATION_PORTRAIT ||
+                                    getRequestedOrientation() != ActivityInfo.SCREEN_ORIENTATION_PORTRAIT)));
 
             bound.hardKeyboardHidden = (newConfig.hardKeyboardHidden == Configuration.HARDKEYBOARDHIDDEN_YES);
 
@@ -1275,9 +1275,9 @@ public class ConsoleActivity extends AppCompatActivity implements BridgeDisconne
      */
     private void onTerminalChanged() {
         View terminalNameOverlay = findCurrentView(R.id.terminal_name_overlay);
-		if (terminalNameOverlay != null) {
-			terminalNameOverlay.startAnimation(fade_out_delayed);
-		}
+        if (terminalNameOverlay != null) {
+            terminalNameOverlay.startAnimation(fade_out_delayed);
+        }
         updateDefault();
         updatePromptVisible();
         ActivityCompat.invalidateOptionsMenu(ConsoleActivity.this);
